@@ -1,10 +1,3 @@
-extern crate futures;
-extern crate num_cpus;
-extern crate serde_json;
-extern crate tokio_minihttp;
-extern crate tokio_proto;
-extern crate tokio_service;
-
 use futures::future;
 use serde_json::builder::ObjectBuilder;
 use tokio_minihttp::{Http, Request, Response};

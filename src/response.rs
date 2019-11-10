@@ -45,7 +45,7 @@ impl Response {
 
 pub fn encode(msg: Response, buf: &mut BytesMut) {
     let length = msg.response.len();
-    let now = ::date::now();
+    let now = crate::date::now();
 
     write!(
         FastWrite(buf),
