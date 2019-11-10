@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::fmt::{self, Write};
+use std::fmt;
 use std::str;
 
 use std::time::{self, Duration};
@@ -59,21 +59,10 @@ impl LastRenderedNow {
     }
 
     fn update(&mut self, last_update: time::Instant) {
-        self.amt = 0;
-
-        write!(LocalBuffer(self), "{}", chrono::Utc::now().to_rfc2822()).unwrap();
+        let date = chrono::Utc::now().to_rfc2822();
+        let date = date.as_bytes();
+        self.bytes[..date.len()].copy_from_slice(date);
+        self.amt = date.len();
         self.next_update = last_update + Duration::new(1, 0);
-    }
-}
-
-struct LocalBuffer<'a>(&'a mut LastRenderedNow);
-
-impl<'a> fmt::Write for LocalBuffer<'a> {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        let start = self.0.amt;
-        let end = start + s.len();
-        self.0.bytes[start..end].copy_from_slice(s.as_bytes());
-        self.0.amt += s.len();
-        Ok(())
     }
 }
