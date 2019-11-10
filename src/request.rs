@@ -1,4 +1,4 @@
-use std::{io, slice, str, fmt};
+use std::{fmt, io, slice, str};
 
 use bytes::BytesMut;
 
@@ -73,14 +73,16 @@ pub fn decode(buf: &mut BytesMut) -> io::Result<Option<Request>> {
             (start, start + a.len())
         };
 
-        (toslice(r.method.unwrap().as_bytes()),
-         toslice(r.path.unwrap().as_bytes()),
-         r.version.unwrap(),
-         r.headers
-          .iter()
-          .map(|h| (toslice(h.name.as_bytes()), toslice(h.value)))
-          .collect(),
-         amt)
+        (
+            toslice(r.method.unwrap().as_bytes()),
+            toslice(r.path.unwrap().as_bytes()),
+            r.version.unwrap(),
+            r.headers
+                .iter()
+                .map(|h| (toslice(h.name.as_bytes()), toslice(h.value)))
+                .collect(),
+            amt,
+        )
     };
 
     Ok(Request {
@@ -89,7 +91,8 @@ pub fn decode(buf: &mut BytesMut) -> io::Result<Option<Request>> {
         version: version,
         headers: headers,
         data: buf.split_to(amt),
-    }.into())
+    }
+    .into())
 }
 
 impl<'req> Iterator for RequestHeaders<'req> {

@@ -1,6 +1,6 @@
 use std::fmt::{self, Write};
 
-use bytes::{BytesMut, BufMut};
+use bytes::{BufMut, BytesMut};
 
 pub struct Response {
     headers: Vec<(String, String)>,
@@ -10,7 +10,7 @@ pub struct Response {
 
 enum StatusMessage {
     Ok,
-    Custom(u32, String)
+    Custom(u32, String),
 }
 
 impl Response {
@@ -47,12 +47,19 @@ pub fn encode(msg: Response, buf: &mut BytesMut) {
     let length = msg.response.len();
     let now = ::date::now();
 
-    write!(FastWrite(buf), "\
-        HTTP/1.1 {}\r\n\
-        Server: Example\r\n\
-        Content-Length: {}\r\n\
-        Date: {}\r\n\
-    ", msg.status_message, length, now).unwrap();
+    write!(
+        FastWrite(buf),
+        "\
+         HTTP/1.1 {}\r\n\
+         Server: Example\r\n\
+         Content-Length: {}\r\n\
+         Date: {}\r\n\
+         ",
+        msg.status_message,
+        length,
+        now
+    )
+    .unwrap();
 
     for &(ref k, ref v) in &msg.headers {
         push(buf, k.as_bytes());

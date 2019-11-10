@@ -1,15 +1,15 @@
-extern crate tokio_service;
-extern crate tokio_proto;
-extern crate tokio_minihttp;
 extern crate futures;
 extern crate num_cpus;
 extern crate serde_json;
+extern crate tokio_minihttp;
+extern crate tokio_proto;
+extern crate tokio_service;
 
 use futures::future;
-use tokio_service::Service;
-use tokio_proto::TcpServer;
-use tokio_minihttp::{Request, Response, Http};
 use serde_json::builder::ObjectBuilder;
+use tokio_minihttp::{Http, Request, Response};
+use tokio_proto::TcpServer;
+use tokio_service::Service;
 
 struct Techempower;
 
@@ -26,16 +26,18 @@ impl Service for Techempower {
         match req.path() {
             "/json" => {
                 let json = serde_json::to_string(
-                    &ObjectBuilder::new().insert("message", "Hello, World!")
-                .build()).unwrap();
+                    &ObjectBuilder::new()
+                        .insert("message", "Hello, World!")
+                        .build(),
+                )
+                .unwrap();
 
-                resp.header("Content-Type", "application/json")
-                    .body(&json);
-            },
+                resp.header("Content-Type", "application/json").body(&json);
+            }
             "/plaintext" => {
                 resp.header("Content-Type", "text/plain")
                     .body("Hello, World!");
-            },
+            }
             _ => {
                 resp.status_code(404, "Not Found");
             }

@@ -7,7 +7,7 @@ extern crate tokio_service;
 use std::io;
 
 use futures::future;
-use tokio_minihttp::{Request, Response, Http};
+use tokio_minihttp::{Http, Request, Response};
 use tokio_proto::TcpServer;
 use tokio_service::Service;
 
@@ -38,6 +38,5 @@ impl Service for HelloWorld {
 fn main() {
     drop(env_logger::init());
     let addr = "0.0.0.0:8080".parse().unwrap();
-    TcpServer::new(Http, addr)
-        .serve(|| Ok(HelloWorld));
+    TcpServer::new(Http, addr).serve(|| Ok(HelloWorld));
 }

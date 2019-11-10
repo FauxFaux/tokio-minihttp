@@ -18,7 +18,7 @@ pub use request::Request;
 pub use response::Response;
 
 use bytes::BytesMut;
-use tokio_io::codec::{Encoder, Decoder, Framed};
+use tokio_io::codec::{Decoder, Encoder, Framed};
 use tokio_io::{AsyncRead, AsyncWrite};
 use tokio_proto::pipeline::ServerProto;
 
