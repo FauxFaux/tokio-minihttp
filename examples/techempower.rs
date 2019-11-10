@@ -1,5 +1,5 @@
 use futures::future;
-use serde_json::builder::ObjectBuilder;
+use serde_json::json;
 use tokio_minihttp::{Http, Request, Response};
 use tokio_proto::TcpServer;
 use tokio_service::Service;
@@ -18,11 +18,9 @@ impl Service for Techempower {
         // Bare-bones router
         match req.path() {
             "/json" => {
-                let json = serde_json::to_string(
-                    &ObjectBuilder::new()
-                        .insert("message", "Hello, World!")
-                        .build(),
-                )
+                let json = serde_json::to_string(&json!({
+                    "message": "Hello, World!"
+                }))
                 .unwrap();
 
                 resp.header("Content-Type", "application/json").body(&json);

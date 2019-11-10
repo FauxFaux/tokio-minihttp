@@ -29,7 +29,7 @@ impl Service for StatusService {
 }
 
 fn main() {
-    drop(env_logger::init());
+    env_logger::init();
     let addr = "0.0.0.0:8080".parse().unwrap();
     TcpServer::new(Http, addr).serve(|| Ok(StatusService));
 }
