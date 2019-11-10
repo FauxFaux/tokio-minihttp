@@ -8,7 +8,7 @@ pub use crate::request::Request;
 pub use crate::response::Response;
 
 use bytes::BytesMut;
-use tokio_io::codec::{Decoder, Encoder, Framed};
+use tokio_codec::{Decoder, Encoder, Framed};
 use tokio_io::{AsyncRead, AsyncWrite};
 use tokio_proto::pipeline::ServerProto;
 
@@ -21,7 +21,7 @@ impl<T: AsyncRead + AsyncWrite + 'static> ServerProto<T> for Http {
     type BindTransport = io::Result<Framed<T, HttpCodec>>;
 
     fn bind_transport(&self, io: T) -> io::Result<Framed<T, HttpCodec>> {
-        Ok(io.framed(HttpCodec))
+        Ok(Framed::new(io, HttpCodec))
     }
 }
 
