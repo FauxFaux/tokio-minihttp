@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::fmt::{self, Write};
 use std::str;
 
-use time::{self, Duration};
+use std::time::{self, Duration};
 
 pub struct Now(());
 
@@ -31,20 +31,20 @@ pub fn now() -> Now {
 struct LastRenderedNow {
     bytes: [u8; 128],
     amt: usize,
-    next_update: time::Timespec,
+    next_update: time::Instant,
 }
 
 thread_local!(static LAST: RefCell<LastRenderedNow> = RefCell::new(LastRenderedNow {
     bytes: [0; 128],
     amt: 0,
-    next_update: time::Timespec::new(0, 0),
+    next_update: time::Instant::now(),
 }));
 
 impl fmt::Display for Now {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         LAST.with(|cache| {
             let mut cache = cache.borrow_mut();
-            let now = time::get_time();
+            let now = time::Instant::now();
             if now > cache.next_update {
                 cache.update(now);
             }
@@ -58,11 +58,11 @@ impl LastRenderedNow {
         str::from_utf8(&self.bytes[..self.amt]).unwrap()
     }
 
-    fn update(&mut self, now: time::Timespec) {
+    fn update(&mut self, last_update: time::Instant) {
         self.amt = 0;
-        write!(LocalBuffer(self), "{}", time::at(now).rfc822()).unwrap();
-        self.next_update = now + Duration::seconds(1);
-        self.next_update.nsec = 0;
+
+        write!(LocalBuffer(self), "{}", chrono::Utc::now().to_rfc2822()).unwrap();
+        self.next_update = last_update + Duration::new(1, 0);
     }
 }
 
